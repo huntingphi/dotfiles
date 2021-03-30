@@ -5,6 +5,9 @@
 # Download
 curl -L git.io/antigen > ~/antigen.zsh
 
-echo 'source $HOME/antigen.zsh' >
-source ~/.antigenrc
+cp .zshrc ~/.zshrc
+cp .vimrc ~/.vimrc
+cp .antigenrc ~/.antigenrc
+
+source ~/.zshrc
 
