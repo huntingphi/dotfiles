@@ -16,6 +16,11 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'preservim/nerdtree'
 Plug 'joshdick/onedark.vim'
 Plug 'sheerun/vim-polyglot'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'jremmen/vim-ripgrep'
+Plug 'airblade/vim-gitgutter'
+Plug 'embear/vim-localvimrc'
 call plug#end()
 let g:airline_powerline_fonts = 1
 
@@ -24,8 +29,43 @@ let NERDTreeShowHidden=1
 map <silent> <C-n> :NERDTreeToggle<CR>
 
 " close NERDTree after a file is opened
-" let g:NERDTreeQuitOnOpen=1
+"let g:NERDTreeQuitOnOpen=1
 " autocmd VimEnter if argc() == 0 && !exists("s:std_in" | NERDTree | endif
+
+" ctrl-p to fzf
+nnoremap <C-p> :Files<Cr>
+
+" ctrl-g to ripgrep
+"
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
+  \   fzf#vim#with_preview(), <bang>0)
+function! RipgrepFzf(query, fullscreen)
+  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+endfunction
+
+command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+nnoremap <C-g> :Rg<Cr>
+
+function! RipgrepFzf(query, fullscreen)
+  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+endfunction
+
+command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+
+
+" allowlist all local vimrc files in workplace
+let g:localvimrc_whitelist='/local/home/jmoller/workplace/*'
+let g:localvimrc_sandbox=0
 
 set number
 set linebreak
