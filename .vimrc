@@ -21,18 +21,52 @@ Plug 'junegunn/fzf.vim'
 Plug 'jremmen/vim-ripgrep'
 Plug 'airblade/vim-gitgutter'
 Plug 'embear/vim-localvimrc'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'tpope/vim-dispatch'
+" ----------------------------------------------------------------------
+Plug 'vim-test/vim-test'
+" these "Ctrl mappings" work well when Caps Lock is mapped to Ctrl
+nmap <silent> t<C-n> :TestNearest<CR>
+nmap <silent> t<C-f> :TestFile<CR>
+nmap <silent> t<C-s> :TestSuite<CR>
+nmap <silent> t<C-l> :TestLast<CR>
+nmap <silent> t<C-g> :TestVisit<CR>
+let test#python#runner = 'pytest'
+let test#python#pytest#executable = 'brazil-test-exec --no-capture --addopts "-l -vv -n 0 --no-cov -k %"<'
+" ----------------------------------------------------------------------
+" Plug 'tpope/vim-fugitive'
 call plug#end()
 let g:airline_powerline_fonts = 1
+source ~/coc-config.vim
 
+" NERDTree config
 " NERDTree on ctrl+n
-let NERDTreeShowHidden=1
 map <silent> <C-n> :NERDTreeToggle<CR>
+let NERDTreeShowHidden=1
+let NERDTreeIgnore = [ '__pycache__', '\.pyc$', '\.o$', '\.swp',  '*\.swp',  'node_modules/' ]
 
-" close NERDTree after a file is opened
-"let g:NERDTreeQuitOnOpen=1
-" autocmd VimEnter if argc() == 0 && !exists("s:std_in" | NERDTree | endif
 
-" ctrl-p to fzf
+autocmd VimEnter * NERDTree | wincmd p
+" Start NERDTree when Vim is started without file arguments.
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists('s:std_in') | NERDTree | endif
+nnoremap <silent> <Leader>v :NERDTreeFind<CR>
+" Exit Vim if NERDTree is the only window left.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
+    \ quit | endif
+" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
+autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
+    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
+
+ " Start NERDTree. If a file is specified, move the cursor to its window.
+ autocmd StdinReadPre * let s:std_in=1
+ autocmd VimEnter * NERDTree | if argc() > 0 || exists("s:std_in") | wincmd p | endif
+ " close NERDTree after a file is opened
+let g:NERDTreeQuitOnOpen=1
+
+ " ctrl-p to fzf
 nnoremap <C-p> :Files<Cr>
 
 " ctrl-g to ripgrep
@@ -131,7 +165,7 @@ au FocusGained,BufEnter * checktime
 
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file
-let mapleader = ","
+let mapleader = "\<Space>"
 
 " Fast saving
 nmap <leader>w :w!<cr>
@@ -293,7 +327,7 @@ vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 " => Moving around, tabs, windows and buffers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
-map <space> /
+" map <space> /
 " map <C-space> ?"
 
 " Disable highlight when <leader><cr> is pressed
@@ -415,6 +449,7 @@ map <leader>x :e ~/buffer.md<cr>
 
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
+nnoremap <leader><leader> <c-^>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -475,3 +510,9 @@ colorscheme onedark
 syntax on
 highlight Normal ctermbg=None
 highlight LineNr ctermfg=DarkGrey
+
+" Brazil dispatch
+nnoremap <F5> :Dispatch! brazil-build<CR>
+nnoremap <F6> :Dispatch brazil-build test<CR>
+nnoremap <F8> :Dispatch brazil-build release<CR>
+
