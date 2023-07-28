@@ -22,9 +22,11 @@ Plug 'jremmen/vim-ripgrep'
 Plug 'airblade/vim-gitgutter'
 Plug 'embear/vim-localvimrc'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc-solargraph',
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'tpope/vim-dispatch'
+Plug 'ssh://git.amazon.com:2222/pkg/VimCodeBrowserPlugin', {'branch': 'mainline'}
 " ----------------------------------------------------------------------
 Plug 'vim-test/vim-test'
 " these "Ctrl mappings" work well when Caps Lock is mapped to Ctrl
@@ -67,7 +69,7 @@ autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_
 let g:NERDTreeQuitOnOpen=1
 
  " ctrl-p to fzf
-nnoremap <C-p> :Files<Cr>
+nnoremap <C-p> :GFiles<Cr>
 
 " ctrl-g to ripgrep
 "
@@ -515,4 +517,10 @@ highlight LineNr ctermfg=DarkGrey
 nnoremap <F5> :Dispatch! brazil-build<CR>
 nnoremap <F6> :Dispatch brazil-build test<CR>
 nnoremap <F8> :Dispatch brazil-build release<CR>
+
+nnoremap <Leader>p :RG<Cr>
+nnoremap <Leader>i :Bu<Cr>
+" Code Browser
+ vmap <Leader>cx :CodeBrowserBlobUrl<CR>
+ nmap <Leader>cx :CodeBrowserBlobUrl<CR>
 
