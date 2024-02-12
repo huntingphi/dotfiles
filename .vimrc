@@ -26,7 +26,11 @@ Plug 'neoclide/coc-solargraph',
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'tpope/vim-dispatch'
+Plug 'tpope/vim-abolish'
+Plug 'tpope/vim-obsession'
 Plug 'ssh://git.amazon.com:2222/pkg/VimCodeBrowserPlugin', {'branch': 'mainline'}
+let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
+Plug 'puremourning/vimspector'
 " ----------------------------------------------------------------------
 Plug 'vim-test/vim-test'
 " these "Ctrl mappings" work well when Caps Lock is mapped to Ctrl
@@ -42,6 +46,16 @@ let test#python#pytest#executable = 'brazil-test-exec --no-capture --addopts "-l
 call plug#end()
 let g:airline_powerline_fonts = 1
 source ~/coc-config.vim
+function! JavaStartDebugCallback(err, port)
+      execute "cexpr! 'Java debug started on port: " . a:port . "'"
+        call vimspector#LaunchWithSettings({ "configuration": "Java Attach", "AdapterPort": a:port })
+endfunction
+
+function JavaStartDebug()
+      call CocActionAsync('runCommand', 'vscode.java.startDebugSession', function('JavaStartDebugCallback'))
+endfunction
+
+nmap <F1> :call JavaStartDebug()<CR>
 
 " NERDTree config
 " NERDTree on ctrl+n
@@ -89,7 +103,7 @@ command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 nnoremap <C-g> :Rg<Cr>
 
 function! RipgrepFzf(query, fullscreen)
-  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+  let command_fmt = 'rg --sort path --column --line-number --no-heading --color=always --smart-case -- %s || true'
   let initial_command = printf(command_fmt, shellescape(a:query))
   let reload_command = printf(command_fmt, '{q}')
   let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
@@ -451,6 +465,9 @@ map <leader>x :e ~/buffer.md<cr>
 
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
+" switch to previous file
+nnoremap <leader><leader> <c-^>
+" open up test file
 nnoremap <leader><leader> <c-^>
 
 
