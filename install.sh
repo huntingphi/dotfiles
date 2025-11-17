@@ -12,7 +12,7 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 cp .zshrc ~/.zshrc
 cp .vimrc ~/.vimrc
 cp .antigenrc ~/.antigenrc
-cp .tmux.conf
+cp .tmux.conf ~/.tmux.conf
 
 source ~/.zshrc
 
